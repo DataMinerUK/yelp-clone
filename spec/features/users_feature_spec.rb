@@ -45,7 +45,7 @@ feature "User can sign in and out" do
       visit('/')
       click_link('Edit New')
       fill_in 'Name', with: 'Not new'
-      click_button 'Update Restaurant'
+      expect{ click_button 'Update Restaurant' }.not_to change{ Restaurant.find_by(name: 'New') }
       expect(page).to have_content 'You cannot modify this restaurant'
     end
 
@@ -55,7 +55,7 @@ feature "User can sign in and out" do
       click_link('Sign out')
       sign_up_user_test2
       visit('/')
-      click_link('Delete New')
+      expect{ click_link('Delete New') }.not_to change{ Restaurant.count }
       expect(page).not_to have_content 'Restaurant deleted successfully'
       expect(page).to have_content 'You cannot modify this restaurant'
     end
