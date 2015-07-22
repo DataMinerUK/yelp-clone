@@ -48,6 +48,17 @@ feature "User can sign in and out" do
       expect(current_path).not_to eq "/restaurants/#{restaurant_id}/edit"
     end
 
+    scenario "can only delete restaurants they have created" do
+      sign_up_user_test1
+      create_restaurant_New
+      click_link('Sign out')
+      sign_up_user_test2
+      visit('/')
+      click_link('Delete New')
+      expect(page).not_to have_content 'Restaurant deleted successfully'
+      expect(page).to have_content 'You cannot delete this restaurant'
+    end
+
   end
 
   def sign_up_user_test1

@@ -65,14 +65,9 @@ feature 'restaurants' do
 
   context 'editing restaurants' do
 
-    # before {Restaurant.create name: 'KFC'}
-
     scenario 'let a user edit a restaurant they have created' do
        sign_up_user
-       visit '/restaurants'
-       click_link 'Add a restaurant'
-       fill_in 'Name', with: 'KFC'
-       click_button 'Create Restaurant'
+       create_KFC
        visit '/restaurants'
        click_link 'Edit KFC'
        fill_in 'Name', with: 'Kentucky Fried Chicken'
@@ -84,10 +79,9 @@ feature 'restaurants' do
 
   context 'deleting restaurants' do
 
-    before {Restaurant.create name: 'KFC'}
-
     scenario 'removes a restaurant when a user clicks a delete link' do
       sign_up_user
+      create_KFC
       visit '/restaurants'
       click_link 'Delete KFC'
       expect(page).not_to have_content 'KFC'
@@ -102,6 +96,13 @@ feature 'restaurants' do
     fill_in('Password', with: 'testtest')
     fill_in('Password confirmation', with: 'testtest')
     click_button('Sign up')
+  end
+
+  def create_KFC
+    visit '/restaurants'
+    click_link 'Add a restaurant'
+    fill_in 'Name', with: 'KFC'
+    click_button 'Create Restaurant'
   end
 
 end
