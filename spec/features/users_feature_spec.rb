@@ -44,8 +44,9 @@ feature "User can sign in and out" do
       sign_up_user_test2
       visit('/')
       click_link('Edit New')
-      restaurant_id = Restaurant.find_by(name: 'New').id
-      expect(current_path).not_to eq "/restaurants/#{restaurant_id}/edit"
+      fill_in 'Name', with: 'Not new'
+      click_button 'Update Restaurant'
+      expect(page).to have_content 'You cannot modify this restaurant'
     end
 
     scenario "can only delete restaurants they have created" do
@@ -56,7 +57,7 @@ feature "User can sign in and out" do
       visit('/')
       click_link('Delete New')
       expect(page).not_to have_content 'Restaurant deleted successfully'
-      expect(page).to have_content 'You cannot delete this restaurant'
+      expect(page).to have_content 'You cannot modify this restaurant'
     end
 
   end

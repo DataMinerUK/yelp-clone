@@ -1,6 +1,7 @@
 class RestaurantsController < ApplicationController
 
-  before_action :authenticate_user!, :except => [:index, :show]
+  before_action :authenticate_user!, except: [:index, :show]
+  before_action :set_current_user, only: [:destroy, :update]
 
   def index
     @restaurants = Restaurant.all
@@ -25,31 +26,38 @@ class RestaurantsController < ApplicationController
 
   def edit
     @restaurant = Restaurant.find(params[:id])
-    if @restaurant.user_id != current_user.id
-      flash[:notice] = 'You cannot edit this restaurant'
-      redirect_to restaurants_path
-    else
+    # if @restaurant.user_id != current_user.id
+    #   flash[:notice] = 'You cannot edit this restaurant'
+    #   redirect_to restaurants_path
+    # else
       render 'edit'
-    end
+    # end
   end
 
   def update
-    @restaurant = Restaurant.find(params[:id])
-    @restaurant.update(restaurant_params)
-
+    unless @restaurant.update(restaurant_params)
+      errors = @restaurant.errors[:base].join(', ')
+      flash[:notice] = errors
+    end
     redirect_to '/restaurants'
   end
 
   def destroy
-    @restaurant = Restaurant.find(params[:id])
-    if @restaurant.user_id == current_user.id
-      @restaurant.destroy
+    if @restaurant.destroy
       flash[:notice] = 'Restaurant deleted successfully'
       redirect_to '/restaurants'
     else
-      flash[:notice] = 'You cannot delete this restaurant'
+      errors = @restaurant.errors[:base].join(', ')
+      flash[:notice] = errors
       redirect_to '/restaurants'
     end
+  end
+
+  private
+
+  def set_current_user
+    @restaurant = Restaurant.find(params[:id])
+    @restaurant.current_user = current_user
   end
 
   def restaurant_params
