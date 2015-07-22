@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'omniauth-facebook'
 gem 'devise'
 gem 'rake', '~> 10.4.2'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
