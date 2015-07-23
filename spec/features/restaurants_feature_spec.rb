@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 feature 'restaurants' do
+
+  let(:user) { FactoryGirl.create(:user) }
+
   context 'no restaurants have been added' do
     scenario 'should display a prompt to add a restaurant' do
       visit '/restaurants'
@@ -10,9 +13,7 @@ feature 'restaurants' do
   end
 
   context 'restaurants have been added' do
-    before do
-      Restaurant.create(name: 'KFC')
-    end
+    before { Restaurant.create(name: 'KFC') }
 
     scenario 'display restaurants' do
       visit '/restaurants'
@@ -23,7 +24,6 @@ feature 'restaurants' do
 
   context 'creating restaurants' do
     scenario 'prompts user to fill out a form, then displays the new restaurant' do
-      user = FactoryGirl.create(:user)
       login_as(user, :scope => :user)
       visit '/restaurants'
       click_link 'Add a restaurant'
@@ -41,7 +41,7 @@ feature 'restaurants' do
 
     context 'an invalid restaurant' do
       it 'does not let you submit a name that is too short' do
-        sign_up_user
+        login_as(user, :scope => :user)
         visit '/restaurants'
         click_link 'Add a restaurant'
         fill_in 'Name', with: 'kf'
@@ -67,7 +67,7 @@ feature 'restaurants' do
   context 'editing restaurants' do
 
     scenario 'let a user edit a restaurant they have created' do
-       sign_up_user
+       login_as(user, :scope => :user)
        create_KFC
        visit '/restaurants'
        click_link 'Edit KFC'
@@ -81,7 +81,7 @@ feature 'restaurants' do
   context 'deleting restaurants' do
 
     scenario 'removes a restaurant when a user clicks a delete link' do
-      sign_up_user
+      login_as(user, :scope => :user)
       create_KFC
       visit '/restaurants'
       click_link 'Delete KFC'
@@ -90,14 +90,6 @@ feature 'restaurants' do
     end
   end
 
-  def sign_up_user
-    visit('/')
-    click_link('Sign up')
-    fill_in('Email', with: 'test@example.com')
-    fill_in('Password', with: 'testtest')
-    fill_in('Password confirmation', with: 'testtest')
-    click_button('Sign up')
-  end
 
   def create_KFC
     visit '/restaurants'
