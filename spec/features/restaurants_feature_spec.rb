@@ -54,7 +54,8 @@ feature 'restaurants' do
 
   context 'viewing restaurants' do
 
-    let!(:kfc){Restaurant.create(name:'KFC')}
+    let(:kfc){ FactoryGirl.create(:restaurant)}
+    before { kfc }
 
     scenario 'lets a user view a restaurant' do
      visit '/restaurants'
@@ -64,38 +65,34 @@ feature 'restaurants' do
     end
   end
 
-  context 'editing restaurants' do
+  context 'user has created KFC' do
 
-    scenario 'let a user edit a restaurant they have created' do
-       login_as(user, :scope => :user)
-       create_KFC
-       visit '/restaurants'
-       click_link 'Edit KFC'
-       fill_in 'Name', with: 'Kentucky Fried Chicken'
-       click_button 'Update Restaurant'
-       expect(page).to have_content 'Kentucky Fried Chicken'
-       expect(current_path).to eq '/restaurants'
+    before { user.restaurants.create({name: 'KFC'}) }
+
+    context 'editing restaurants' do
+
+      scenario 'let a user edit a restaurant they have created' do
+         login_as(user, :scope => :user)
+         visit '/restaurants'
+         click_link 'Edit KFC'
+         fill_in 'Name', with: 'Kentucky Fried Chicken'
+         click_button 'Update Restaurant'
+         expect(page).to have_content 'Kentucky Fried Chicken'
+         expect(current_path).to eq '/restaurants'
+      end
     end
-  end
 
-  context 'deleting restaurants' do
+    context 'deleting restaurants' do
 
-    scenario 'removes a restaurant when a user clicks a delete link' do
-      login_as(user, :scope => :user)
-      create_KFC
-      visit '/restaurants'
-      click_link 'Delete KFC'
-      expect(page).not_to have_content 'KFC'
-      expect(page).to have_content 'Restaurant deleted successfully'
+      scenario 'removes a restaurant when a user clicks a delete link' do
+        login_as(user, :scope => :user)
+        visit '/restaurants'
+        click_link 'Delete KFC'
+        expect(page).not_to have_content 'KFC'
+        expect(page).to have_content 'Restaurant deleted successfully'
+      end
     end
-  end
 
-
-  def create_KFC
-    visit '/restaurants'
-    click_link 'Add a restaurant'
-    fill_in 'Name', with: 'KFC'
-    click_button 'Create Restaurant'
   end
 
 end
