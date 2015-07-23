@@ -15,13 +15,10 @@ feature "User can sign in and out" do
   end
 
   context "user signed in on the homepage" do
+
     before do
-      visit('/')
-      click_link('Sign up')
-      fill_in('Email', with: 'test@example.com')
-      fill_in('Password', with: 'testtest')
-      fill_in('Password confirmation', with: 'testtest')
-      click_button('Sign up')
+      user = FactoryGirl.create(:user)
+      login_as(user, :scope => :user)
     end
 
     it "should see 'sign out' link" do
@@ -37,11 +34,15 @@ feature "User can sign in and out" do
   end
 
   context "user making changes to restaurants" do
+
+    before do
+      user = FactoryGirl.create(:user)
+      user.restaurants.create({name: 'New'})
+      another_user = FactoryGirl.create(:user)
+      login_as(another_user, :scope => :user)
+    end
+
     scenario "can only edit restaurants they have created" do
-      sign_up_user_test1
-      create_restaurant_New
-      click_link('Sign out')
-      sign_up_user_test2
       visit('/')
       click_link('Edit New')
       fill_in 'Name', with: 'Not new'
@@ -50,26 +51,22 @@ feature "User can sign in and out" do
     end
 
     scenario "can only delete restaurants they have created" do
-      sign_up_user_test1
-      create_restaurant_New
-      click_link('Sign out')
-      sign_up_user_test2
       visit('/')
       expect{ click_link('Delete New') }.not_to change{ Restaurant.count }
       expect(page).not_to have_content 'Restaurant deleted successfully'
       expect(page).to have_content 'You cannot modify this restaurant'
     end
 
-    context 'creating reviews' do
+  end
+  
+  context 'creating reviews' do
 
-      scenario 'should only ba able to create one review per restaurant' do
-        sign_up_user_test1
-        create_restaurant_New
-        add_review_to_New
-        expect{ add_review_to_New }.not_to change{ Review.count }
-        expect(page).to have_content 'You have already reviewed this restaurant'
-      end
-
+    scenario 'should only ba able to create one review per restaurant' do
+      sign_up_user_test1
+      create_restaurant_New
+      add_review_to_New
+      expect{ add_review_to_New }.not_to change{ Review.count }
+      expect(page).to have_content 'You have already reviewed this restaurant'
     end
 
   end
