@@ -6,13 +6,18 @@ feature 'reviewing' do
   scenario 'allows users to leave a review using a form' do
      sign_up_user
      visit '/restaurants'
-     click_link 'Review KFC'
-     fill_in "Thoughts", with: "so so"
-     select '3', from: 'Rating'
-     click_button 'Leave Review'
-
+     review_KFC
      expect(current_path).to eq '/restaurants'
      expect(page).to have_content('so so')
+  end
+
+  scenario 'allows users to delete a review' do
+    sign_up_user
+    visit '/restaurants'
+    review_KFC
+    click_link 'Delete review'
+    expect(current_path).to eq '/restaurants'
+    expect(page).not_to have_content('so so')
   end
 
   def sign_up_user
@@ -24,5 +29,11 @@ feature 'reviewing' do
     click_button('Sign up')
   end
 
+  def review_KFC
+    click_link 'Review KFC'
+    fill_in "Thoughts", with: "so so"
+    select '3', from: 'Rating'
+    click_button 'Leave Review'
+  end
 
 end
