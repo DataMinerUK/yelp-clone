@@ -58,47 +58,23 @@ feature "User can sign in and out" do
     end
 
   end
-  
+
   context 'creating reviews' do
 
-    scenario 'should only ba able to create one review per restaurant' do
-      sign_up_user_test1
-      create_restaurant_New
-      add_review_to_New
-      expect{ add_review_to_New }.not_to change{ Review.count }
+    scenario 'should only be able to create one review per restaurant' do
+      user = FactoryGirl.create(:user)
+      restaurant = FactoryGirl.create(:restaurant)
+      restaurant.reviews.create_with_user({thoughts: 'not great', rating: 2}, user)
+      login_as(user, :scope => :user)
+      add_review_to_factory_restaurant
       expect(page).to have_content 'You have already reviewed this restaurant'
     end
 
   end
 
-  def sign_up_user_test1
-    visit('/')
-    click_link('Sign up')
-    fill_in('Email', with: 'test1@example.com')
-    fill_in('Password', with: 'test1test1')
-    fill_in('Password confirmation', with: 'test1test1')
-    click_button('Sign up')
-  end
-
-  def sign_up_user_test2
-    visit('/')
-    click_link('Sign up')
-    fill_in('Email', with: 'test2@example.com')
-    fill_in('Password', with: 'test2test2')
-    fill_in('Password confirmation', with: 'test2test2')
-    click_button('Sign up')
-  end
-
-  def create_restaurant_New
+  def add_review_to_factory_restaurant
     visit '/restaurants'
-    click_link 'Add a restaurant'
-    fill_in 'Name', with: 'New'
-    click_button 'Create Restaurant'
-  end
-
-  def add_review_to_New
-    visit '/restaurants'
-    click_link 'Review New'
+    click_link 'Review KFC'
     fill_in "Thoughts", with: "so so"
     select '3', from: 'Rating'
     click_button 'Leave Review'
