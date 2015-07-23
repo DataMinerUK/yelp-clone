@@ -1,15 +1,13 @@
 class Restaurant < ActiveRecord::Base
-  has_many :reviews, dependent: :destroy
+  has_many :reviews,
+      -> { extending WithUserAssociationExtension },
+      dependent: :restrict_with_exception, dependent: :destroy
   belongs_to :user
   validates :name, length: {minimum: 3}, uniqueness: true
   before_destroy :current_user_created_restaurant
   before_update :current_user_created_restaurant
 
   attr_accessor :current_user
-
-  def build_review current_user, review_params
-    self.reviews.build({user: current_user}.merge(review_params))
-  end
 
   private
 
