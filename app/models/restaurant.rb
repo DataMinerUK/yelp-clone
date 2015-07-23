@@ -13,7 +13,7 @@ class Restaurant < ActiveRecord::Base
 
   def current_user_created_restaurant
     errmsg = 'You cannot modify this restaurant'
-    if user_id != current_user.id
+    unless user == current_user
       errors[:base] << errmsg
       return false
     end
