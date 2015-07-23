@@ -8,8 +8,7 @@ class Restaurant < ActiveRecord::Base
   attr_accessor :current_user
 
   def build_review current_user, review_params
-    review_params[:restaurant] = self
-    current_user.reviews.build(review_params)
+    self.reviews.build({user: current_user}.merge(review_params))
   end
 
   private
