@@ -60,6 +60,18 @@ feature "User can sign in and out" do
       expect(page).to have_content 'You cannot modify this restaurant'
     end
 
+    context 'creating reviews' do
+
+      scenario 'should only ba able to create one review per restaurant' do
+        sign_up_user_test1
+        create_restaurant_New
+        add_review_to_New
+        expect{ add_review_to_New }.not_to change{ Review.count }
+        expect(page).to have_content 'You have already reviewed this restaurant'
+      end
+
+    end
+
   end
 
   def sign_up_user_test1
@@ -85,6 +97,14 @@ feature "User can sign in and out" do
     click_link 'Add a restaurant'
     fill_in 'Name', with: 'New'
     click_button 'Create Restaurant'
+  end
+
+  def add_review_to_New
+    visit '/restaurants'
+    click_link 'Review New'
+    fill_in "Thoughts", with: "so so"
+    select '3', from: 'Rating'
+    click_button 'Leave Review'
   end
 
 end

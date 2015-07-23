@@ -4,9 +4,13 @@ class Restaurant < ActiveRecord::Base
   validates :name, length: {minimum: 3}, uniqueness: true
   before_destroy :current_user_created_restaurant
   before_update :current_user_created_restaurant
-  # validate :current_user_created_restaurant, on: :destroy
 
   attr_accessor :current_user
+
+  def build_review current_user, review_params
+    review_params[:restaurant] = self
+    current_user.reviews.build(review_params)
+  end
 
   private
 
