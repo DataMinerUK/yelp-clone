@@ -23,7 +23,8 @@ feature 'restaurants' do
 
   context 'creating restaurants' do
     scenario 'prompts user to fill out a form, then displays the new restaurant' do
-      sign_up_user
+      user = FactoryGirl.create(:user)
+      login_as(user, :scope => :user)
       visit '/restaurants'
       click_link 'Add a restaurant'
       fill_in 'Name', with: 'KFC'
